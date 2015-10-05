@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void DeleteData() {
         if (!isExternalStorageWritable()) return;
-        File dir = new File("/sdcard1/csv");
+        File dir = new File("/sdcard/csv");
         if (dir.exists() && dir.isDirectory()) {
             String[] fileList = dir.list();
             for (int i = 0; i < fileList.length; i++)   {
