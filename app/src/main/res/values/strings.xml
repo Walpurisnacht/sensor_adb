@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">UITest</string>
+    <string name="action_settings">Clear</string>
+    <string name="blank"></string>
+</resources>
