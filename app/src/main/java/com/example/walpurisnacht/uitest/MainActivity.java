@@ -40,8 +40,12 @@ public class MainActivity extends AppCompatActivity {
     private
 
     TextView tmpViewer = null;
-    String tmp = null;
-    String path = null;
+    String header = null;
+
+    String data = null;
+    String abspath = null;
+
+    String attrib = null;
 
     int count = 0;
 
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        abspath = "sdcard/csv/";
     }
 
     @Override
@@ -80,6 +85,18 @@ public class MainActivity extends AppCompatActivity {
                 android.os.Process.killProcess(android.os.Process.myPid());
                 super.onDestroy();
                 break;
+            case R.id.up:
+                attrib = "\"up\"";
+                break;
+            case R.id.down:
+                attrib = "\"down\"";
+                break;
+            case R.id.left:
+                attrib = "\"left\"";
+                break;
+            case R.id.right:
+                attrib = "\"right\"";
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -94,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void DeleteData() {
         if (!isExternalStorageWritable()) return;
-        File dir = new File("/sdcard/csv");
+        File dir = new File(abspath);
         if (dir.exists() && dir.isDirectory()) {
             String[] fileList = dir.list();
             for (int i = 0; i < fileList.length; i++)   {
@@ -105,32 +122,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void SaveData() {
 
-        path = Integer.toString(count) + ".csv";
-
         FileOutputStream outputStream;
 
         try {
             if (!isExternalStorageWritable()) return;
 
-            //Fetch data
-            tmpViewer = (TextView) findViewById(R.id.Data);
-            tmp = tmpViewer.getText().toString();
-
             //Save data
-            File csvFolder = new File("/sdcard/csv");
+            File csvFolder = new File(abspath);
             csvFolder.mkdirs();
 
-            File file = new File(csvFolder,path);
+            File file = new File(csvFolder,Integer.toString(count) + ".csv");
             file.createNewFile();
 
             outputStream = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-            outputStreamWriter.write(tmp);
+            outputStreamWriter.write(header + data);
             outputStreamWriter.close();
             outputStream.close();
-
-            Toast.makeText(getBaseContext(), "Saved: " + path, Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -140,10 +149,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void Start_Click(View view) {
         mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        data = null;
 
         tmpViewer = (TextView) findViewById(R.id.Data);
-        tmp = "\"acc_x\",\"acc_y\",\"acc_z\".\"mag_x\",\"mag_y\",\"mag_z\"\n";
-        tmpViewer.setText(tmp);
+        header = "\"acc_x\",\"acc_y\",\"acc_z\".\"mag_x\",\"mag_y\",\"mag_z\",\"result\"\n";
+        tmpViewer.setText(header);
 
         mSensorListener = new SensorEventListener() {
             @Override
@@ -161,10 +171,11 @@ public class MainActivity extends AppCompatActivity {
                     mz = event.values[2];
                 }
 
-                tmp += new String( Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
-                                + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + "\n");
+                data += Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
+                        + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + "," + attrib + "\n";
                 //Accelerometer + Magnetic
-                tmpViewer.setText(tmp);
+                tmpViewer.setText(header + Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
+                        + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + "," + attrib + "\n");
             }
 
             @Override
@@ -174,16 +185,12 @@ public class MainActivity extends AppCompatActivity {
 
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
-
-        Toast.makeText(getBaseContext(),"Started",Toast.LENGTH_SHORT).show();
     }
 
     public void Stop_Click(View view) {
         super.onStop();
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
-
-        Toast.makeText(getBaseContext(),"Stopped",Toast.LENGTH_SHORT).show();
     }
 
     public void Save_Click(View view) {
