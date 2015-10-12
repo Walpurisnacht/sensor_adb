@@ -9,11 +9,4 @@
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never"/>
 
-    <!-- Attribute -->
-    <item android:id="@+id/up" android:title="up"/>
-    <item android:id="@+id/down" android:title="down"/>
-    <item android:id="@+id/left" android:title="left"/>
-    <item android:id="@+id/right" android:title="right"/>
-
-
 </menu>

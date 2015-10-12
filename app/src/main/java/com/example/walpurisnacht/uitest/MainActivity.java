@@ -11,6 +11,7 @@ import android.hardware.SensorManager;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,15 +38,19 @@ public class MainActivity extends AppCompatActivity {
     private float my;
     private float mz;
 
-    private
+    private float gx;
+    private float gy;
+    private float gz;
 
     TextView tmpViewer = null;
-    String header = null;
+    TextView sttViewer = null;
 
+    String header = null;
     String data = null;
     String abspath = null;
 
     String attrib = null;
+    boolean Lock = false;
 
     int count = 0;
 
@@ -67,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -81,21 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 count = 0;
                 break;
             case R.id.quit:
-                this.finish();
-                android.os.Process.killProcess(android.os.Process.myPid());
-                super.onDestroy();
-                break;
-            case R.id.up:
-                attrib = "\"up\"";
-                break;
-            case R.id.down:
-                attrib = "\"down\"";
-                break;
-            case R.id.left:
-                attrib = "\"left\"";
-                break;
-            case R.id.right:
-                attrib = "\"right\"";
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 break;
         }
 
@@ -137,7 +139,14 @@ public class MainActivity extends AppCompatActivity {
             outputStream = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-            outputStreamWriter.write(header + data);
+            String export = header + data;
+            export = export.replace("null","");
+
+            tmpViewer = (TextView) findViewById(R.id.Data);
+            tmpViewer.setMovementMethod(new ScrollingMovementMethod());
+            tmpViewer.setText(export);
+
+            outputStreamWriter.write(export);
             outputStreamWriter.close();
             outputStream.close();
 
@@ -147,13 +156,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //region "Function"
     public void Start_Click(View view) {
+
+        //Safelock
+        if (Lock) return;
+
+        if ((attrib == "\"up\"") || (attrib == "\"down\"")) findViewById(R.id.udButton).performClick();
+        else findViewById(R.id.lrButton).performClick();
+
         mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         data = null;
 
         tmpViewer = (TextView) findViewById(R.id.Data);
-        header = "\"acc_x\",\"acc_y\",\"acc_z\".\"mag_x\",\"mag_y\",\"mag_z\",\"result\"\n";
-        tmpViewer.setText(header);
+        header = "\"label\",\"acc_x\",\"acc_y\",\"acc_z\".\"mag_x\",\"mag_y\",\"mag_z\",\"gyr_x\",\"gyr_y\",\"gyr_z\"" + "\n";
+        //tmpViewer.setText(header);
 
         mSensorListener = new SensorEventListener() {
             @Override
@@ -170,12 +187,23 @@ public class MainActivity extends AppCompatActivity {
                     my = event.values[1];
                     mz = event.values[2];
                 }
+                else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                    gx = event.values[0];
+                    gy = event.values[1];
+                    gz = event.values[2];
+                }
 
-                data += Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
-                        + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + "," + attrib + "\n";
-                //Accelerometer + Magnetic
-                tmpViewer.setText(header + Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
-                        + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + "," + attrib + "\n");
+                if (Float.toString(ax) != null) {
+                    data += attrib + "," + Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
+                            + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz) + ","
+                            + Float.toString(gx) + "," + Float.toString(gy) + "," + Float.toString(gz) + "\n";
+                    //Accelerometer + Magnetic
+                    //tmpViewer.setText(header + data);
+
+                    tmpViewer.setText(header + "\n" + attrib + "," + Float.toString(ax) + "," + Float.toString(ay) + "," + Float.toString(az) + ","
+                            + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz)+ ","
+                            + Float.toString(gx) + "," + Float.toString(gy) + "," + Float.toString(gz)  + "\n");
+                }
             }
 
             @Override
@@ -185,16 +213,38 @@ public class MainActivity extends AppCompatActivity {
 
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_GAME);
+
+        Lock = true;
     }
 
     public void Stop_Click(View view) {
+        Lock = false;
         super.onStop();
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
+        mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE));
     }
 
     public void Save_Click(View view) {
         SaveData();
         count++;
     }
+    //endregion
+
+    //region "Attribute select"
+    public void UD_Click(View view) {
+        if (attrib == "\"up\"") attrib = "\"down\"";
+        else attrib = "\"up\"";
+        sttViewer = (TextView) findViewById(R.id.Stat);
+        sttViewer.setText(attrib);
+    }
+
+    public void LR_Click(View view) {
+        if (attrib == "\"left\"") attrib = "\"right\"";
+        else attrib = "\"left\"";
+        sttViewer = (TextView) findViewById(R.id.Stat);
+        sttViewer.setText(attrib);
+    }
+    //endregion
 }
