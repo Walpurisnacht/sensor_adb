@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     String header = null;
     String data = null;
     String abspath = null;
+    String m_chosen = null;
 
     String attrib = null;
     boolean Lock = false;
@@ -227,8 +228,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void Save_Click(View view) {
-        SaveData();
-        count++;
+        //SaveData();
+        //count++;
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        //Create FileOpenDialog and register a callback
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        SimpleFileDialog FileOpenDialog =  new SimpleFileDialog(MainActivity.this, "FileOpen",
+                new SimpleFileDialog.SimpleFileDialogListener()
+                {
+                    @Override
+                    public void onChosenDir(String chosenDir)
+                    {
+                        // The code in this function will be executed when the dialog OK button is pushed
+                        m_chosen = chosenDir;
+                        Toast.makeText(MainActivity.this, "Chosen FileOpenDialog File: " +
+                                m_chosen, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        //You can change the default filename using the public variable "Default_File_Name"
+        FileOpenDialog.Default_File_Name = "";
+        FileOpenDialog.chooseFile_or_Dir();
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
     }
     //endregion
 
