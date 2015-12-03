@@ -24,22 +24,13 @@ package com.example.walpurisnacht.uitest;
 *  (See Links above for full license text)
 */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-//import android.content.DialogInterface.OnKeyListener;
 import android.os.Environment;
 import android.text.Editable;
 import android.view.Gravity;
-//import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -49,6 +40,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+//import android.content.DialogInterface.OnKeyListener;
+//import android.view.KeyEvent;
 
 public class SimpleFileDialog 
 {

@@ -14,8 +14,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:text="Press START to start record and STOP to stop recording\nSave in setting"
-        android:layout_above="@+id/udButton" />
+        android:text="Press START to start record, U/D and L/R for label (backward)"
+        android:layout_above="@+id/Stat" />
 
     <Button
         android:layout_width="wrap_content"
@@ -24,29 +24,8 @@
         android:id="@+id/startButton"
         android:onClick="Start_Click"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/stopButton" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:text="STOP"
-        android:id="@+id/stopButton"
-        android:onClick="Stop_Click"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:id="@+id/saveButton"
-        android:onClick="Save_Click"
-        android:layout_alignTop="@+id/stopButton"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignTop="@+id/udButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -54,35 +33,35 @@
         android:text="U/D"
         android:id="@+id/udButton"
         android:onClick="UD_Click"
-        android:layout_above="@+id/startButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:height="75dp"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/blank"
         android:id="@+id/Stat"
-        android:layout_alignTop="@+id/lrButton"
-        android:layout_alignBottom="@+id/lrButton"
-        android:layout_toRightOf="@+id/udButton"
-        android:layout_toLeftOf="@+id/lrButton"
-        android:layout_toStartOf="@+id/lrButton"
         android:textStyle="bold"
         android:textSize="25dp"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_above="@+id/udButton"
+        android:layout_alignRight="@+id/startButton"
+        android:layout_alignEnd="@+id/startButton"
+        android:layout_alignLeft="@+id/startButton"
+        android:layout_alignStart="@+id/startButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="L/R"
         android:id="@+id/lrButton"
-        android:layout_alignTop="@+id/udButton"
+        android:onClick="LR_Click"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:onClick="LR_Click"
-        android:layout_above="@+id/stopButton" />
+        android:layout_alignTop="@+id/udButton" />
 
 </RelativeLayout>

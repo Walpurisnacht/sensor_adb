@@ -1,29 +1,24 @@
 package com.example.walpurisnacht.uitest;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,12 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 tmpViewer.setText("Folder cleared!");
                 count = 0;
                 break;
-            case R.id.quit:
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -140,14 +129,13 @@ public class MainActivity extends AppCompatActivity {
             outputStream = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 
-            String export = header + data;
-            export = export.replace("null","");
+            data = data.replace("null","");
 
             tmpViewer = (TextView) findViewById(R.id.Data);
             tmpViewer.setMovementMethod(new ScrollingMovementMethod());
-            tmpViewer.setText(export);
+            tmpViewer.setText(data);
 
-            outputStreamWriter.write(export);
+            outputStreamWriter.write(data);
             outputStreamWriter.close();
             outputStream.close();
 
@@ -163,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         //Safelock
         if (Lock) return;
 
-        if ((attrib == "\"up\"") || (attrib == "\"down\"")) findViewById(R.id.udButton).performClick();
+        if ((attrib == "1") || (attrib == "2")) findViewById(R.id.udButton).performClick();
         else findViewById(R.id.lrButton).performClick();
 
         mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
@@ -171,11 +159,13 @@ public class MainActivity extends AppCompatActivity {
 
         tmpViewer = (TextView) findViewById(R.id.Data);
         header = "\"label\",\"acc_x\",\"acc_y\",\"acc_z\".\"mag_x\",\"mag_y\",\"mag_z\",\"gyr_x\",\"gyr_y\",\"gyr_z\"" + "\n";
-        //tmpViewer.setText(header);
 
         mSensorListener = new SensorEventListener() {
+
+            int cnt = 0;
             @Override
             public void onSensorChanged(SensorEvent event) {
+                if (cnt == 64) HaltSensor();
                 Sensor sensor = event.sensor;
 
                 if (sensor.getType() == Sensor.TYPE_ACCELEROMETER)  {
@@ -205,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                             + Float.toString(mx) + "," + Float.toString(my) + "," + Float.toString(mz)+ ","
                             + Float.toString(gx) + "," + Float.toString(gy) + "," + Float.toString(gz)  + "\n");
                 }
+                cnt++;
             }
 
             @Override
@@ -219,53 +210,27 @@ public class MainActivity extends AppCompatActivity {
         Lock = true;
     }
 
-    public void Stop_Click(View view) {
+    private void HaltSensor() {
         Lock = false;
         super.onStop();
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD));
         mSensorManager.unregisterListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE));
+        SaveData();
+        count++;
     }
-
-    public void Save_Click(View view) {
-        //SaveData();
-        //count++;
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        //Create FileOpenDialog and register a callback
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        SimpleFileDialog FileOpenDialog =  new SimpleFileDialog(MainActivity.this, "FileOpen",
-                new SimpleFileDialog.SimpleFileDialogListener()
-                {
-                    @Override
-                    public void onChosenDir(String chosenDir)
-                    {
-                        // The code in this function will be executed when the dialog OK button is pushed
-                        m_chosen = chosenDir;
-                        Toast.makeText(MainActivity.this, "Chosen FileOpenDialog File: " +
-                                m_chosen, Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        //You can change the default filename using the public variable "Default_File_Name"
-        FileOpenDialog.Default_File_Name = "";
-        FileOpenDialog.chooseFile_or_Dir();
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    }
-    //endregion
 
     //region "Attribute select"
     public void UD_Click(View view) {
-        if (attrib == "\"up\"") attrib = "\"down\"";
-        else attrib = "\"up\"";
+        if (attrib == "1") attrib = "2"; //down
+        else attrib = "1"; //up
         sttViewer = (TextView) findViewById(R.id.Stat);
         sttViewer.setText(attrib);
     }
 
     public void LR_Click(View view) {
-        if (attrib == "\"left\"") attrib = "\"right\"";
-        else attrib = "\"left\"";
+        if (attrib == "3") attrib = "4"; //right
+        else attrib = "3"; //left
         sttViewer = (TextView) findViewById(R.id.Stat);
         sttViewer.setText(attrib);
     }
