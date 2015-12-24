@@ -14,13 +14,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final String TAG = "DEBUG";
 
     private SensorManager mSensorManager;
     private SensorEventListener mSensorListener;
@@ -57,6 +58,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         abspath = "sdcard/csv/";
+//
+//        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        Sensor acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        Sensor mag = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+//        //Sensor gyr = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+//
+//        StringBuilder tmp = new StringBuilder();
+//        tmp.append(String.valueOf(acc.getMaximumRange()));
+//        tmp.append("\n");
+//        tmp.append(String.valueOf(mag.getMaximumRange()));
+//        tmp.append("\n");
+//        //tmp.append(String.valueOf(gyr.getMaximumRange()));
+//        //tmp.append("\n");
+//
+//        tmpViewer = (TextView) findViewById(R.id.Data);
+//        tmpViewer.setText(tmp.toString());
+
+
     }
 
     @Override
@@ -152,7 +171,8 @@ public class MainActivity extends AppCompatActivity {
         if (Lock) return;
 
         if ((attrib == "1") || (attrib == "2")) findViewById(R.id.udButton).performClick();
-        else findViewById(R.id.lrButton).performClick();
+        if ((attrib == "3") || (attrib == "4")) findViewById(R.id.lrButton).performClick();
+        else attrib = "0";
 
         mSensorManager = (SensorManager) this.getSystemService(SENSOR_SERVICE);
         data = null;
